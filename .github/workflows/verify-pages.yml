@@ -40,7 +40,7 @@ jobs:
 
           p = Links()
           p.feed(open("/tmp/posts.html", encoding="utf-8").read())
-          urls = sorted({urljoin(site, x) for x in p.hrefs if "/posts/" in urljoin(site, x)})
+          urls = sorted({urljoin(site, x) for x in p.hrefs if "/posts/" in urljoin(site, x) and urljoin(site, x).rstrip("/") != site.rstrip("/") + "/posts"})
           if len(urls) != 10:
               raise SystemExit(f"Expected 10 post URLs, found {len(urls)}")
           for url in urls:
