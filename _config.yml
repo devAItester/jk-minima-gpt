@@ -1,7 +1,11 @@
 title: jk-minima-gpt
-description: Jekyll with the Minima theme
+description: Jekyll blog with the Minima theme
 theme: minima
 baseurl: "/jk-minima-gpt"
 url: "https://devAItester.github.io"
 markdown: kramdown
 permalink: pretty
+
+exclude:
+  - posts
+  - scripts
