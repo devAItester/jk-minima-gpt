@@ -1,0 +1,48 @@
+name: Verify published Pages
+
+on:
+  push:
+    paths-ignore:
+      - ".github/workflows/verify-pages.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for Pages publication
+        run: sleep 30
+      - name: Verify public pages
+        run: |
+          set -euo pipefail
+          SITE="https://devaitester.github.io/jk-minima-gpt"
+          curl --fail --silent --show-error --location --retry 10 --retry-delay 3 "$SITE/" -o /tmp/index.html
+          curl --fail --silent --show-error --location --retry 10 --retry-delay 3 "$SITE/posts/" -o /tmp/posts.html
+          curl --fail --silent --show-error --location --retry 10 --retry-delay 3 "$SITE/about/" -o /tmp/about.html
+          python3 - <<'PY'
+          from html.parser import HTMLParser
+          from urllib.parse import urljoin
+          import subprocess
+
+          site = "https://devaitester.github.io/jk-minima-gpt/"
+          class Links(HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.hrefs = []
+              def handle_starttag(self, tag, attrs):
+                  for k, v in attrs:
+                      if k == "href" and v:
+                          self.hrefs.append(v)
+
+          p = Links()
+          p.feed(open("/tmp/posts.html", encoding="utf-8").read())
+          urls = sorted({urljoin(site, x) for x in p.hrefs if "/posts/" in urljoin(site, x)})
+          if len(urls) != 10:
+              raise SystemExit(f"Expected 10 post URLs, found {len(urls)}")
+          for url in urls:
+              print("GET", url)
+              subprocess.run(["curl","--fail","--silent","--show-error","--location","--retry","5","--retry-delay","2",url,"-o","/dev/null"], check=True)
+          print("Verified root, posts index, about, and 10 post pages.")
+          PY
