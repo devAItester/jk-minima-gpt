@@ -53,11 +53,27 @@ jobs:
       - name: Verify published pages
         env:
           SITE_URL: ${{ steps.deployment.outputs.page_url }}
+          VERIFY_TOKEN: ${{ github.sha }}
         run: |
           set -euo pipefail
-          curl --fail --silent --show-error --location \
-            --retry 12 --retry-delay 5 --retry-all-errors \
-            "$SITE_URL" -o /tmp/index.html
+
+          for attempt in $(seq 1 12); do
+            echo "Checking published index, attempt $attempt/12"
+            if curl --fail --silent --show-error --location \
+              --retry 3 --retry-delay 2 --retry-all-errors \
+              "$SITE_URL?verify=$VERIFY_TOKEN" -o /tmp/index.html; then
+              count=$(grep -o 'href="[^"]*/posts/[^"]*"' /tmp/index.html | wc -l || true)
+              echo "Found $count post links"
+              if [ "$count" -eq 10 ]; then
+                break
+              fi
+            fi
+            if [ "$attempt" -eq 12 ]; then
+              echo "Published index did not expose all 10 post links"
+              exit 1
+            fi
+            sleep 5
+          done
 
           python3 - <<'PY'
           from html.parser import HTMLParser
@@ -70,6 +86,7 @@ jobs:
               def __init__(self):
                   super().__init__()
                   self.hrefs = []
+
               def handle_starttag(self, tag, attrs):
                   for key, value in attrs:
                       if key == "href" and value:
@@ -81,6 +98,7 @@ jobs:
           urls = {urljoin(site_url, href) for href in parser.hrefs}
           urls.add(site_url)
           urls.add(urljoin(site_url, "about/"))
+
           post_urls = sorted(url for url in urls if "/posts/" in url)
           urls = [site_url, urljoin(site_url, "about/")] + post_urls
 
@@ -92,12 +110,14 @@ jobs:
               print(f"GET {url}")
               subprocess.run([
                   "curl", "--fail", "--silent", "--show-error", "--location",
-                  "--retry", "12", "--retry-delay", "5", "--retry-all-errors",
+                  "--retry", "5", "--retry-delay", "2", "--retry-all-errors",
                   url, "-o", "/dev/null"
               ], check=True)
 
           if len(post_urls) != 10:
-              raise SystemExit(f"Expected 10 published post links, found {len(post_urls)}")
+              raise SystemExit(
+                  f"Expected 10 published post links, found {len(post_urls)}"
+              )
 
           print(f"Verified {len(seen)} published pages.")
           PY
