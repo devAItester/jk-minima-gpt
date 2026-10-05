@@ -1,0 +1,33 @@
+---
+layout: default
+---
+<div class="home">
+  <header class="home-header">
+    <h1 class="page-heading">{{ page.title | escape }}</h1>
+    {{ content }}
+  </header>
+
+  {%- if site.posts.size > 0 -%}
+    <section aria-labelledby="latest-posts">
+      <div class="section-heading">
+        <h2 id="latest-posts">Последние записи</h2>
+        <a href="{{ "/posts/" | relative_url }}">Все записи</a>
+      </div>
+
+      <ul class="post-list">
+        {%- for post in site.posts limit:5 -%}
+        <li>
+          <article>
+            <p class="post-meta">
+              <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: site.minima.date_format }}</time>
+            </p>
+            <h3>
+              <a class="post-link" href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
+            </h3>
+          </article>
+        </li>
+        {%- endfor -%}
+      </ul>
+    </section>
+  {%- endif -%}
+</div>
