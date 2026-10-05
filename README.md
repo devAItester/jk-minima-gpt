@@ -1,2 +1,3 @@
 # jk-minima-gpt
-install ssg jekill theme minims witch chatgpt
+
+Минимальный блог на Jekyll и Minima с публикацией исходных Markdown-файлов из `posts/`.
