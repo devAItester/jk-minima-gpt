@@ -53,7 +53,6 @@ jobs:
       - name: Verify published pages
         env:
           SITE_URL: ${{ steps.deployment.outputs.page_url }}
-          VERIFY_TOKEN: ${{ github.sha }}
         run: |
           set -euo pipefail
 
@@ -62,20 +61,20 @@ jobs:
 
             if curl --fail --silent --show-error --location \
               --retry 3 --retry-delay 2 --retry-all-errors \
-              "$SITE_URL?verify=$VERIFY_TOKEN" -o /tmp/index.html &&
+              "$SITE_URL" -o /tmp/index.html &&
               curl --fail --silent --show-error --location \
               --retry 3 --retry-delay 2 --retry-all-errors \
-              "$SITE_URL/posts/?verify=$VERIFY_TOKEN" -o /tmp/posts.html &&
+              "$SITE_URL/posts/" -o /tmp/posts.html &&
               curl --fail --silent --show-error --location \
               --retry 3 --retry-delay 2 --retry-all-errors \
-              "$SITE_URL/about/?verify=$VERIFY_TOKEN" -o /tmp/about.html; then
+              "$SITE_URL/about/" -o /tmp/about.html; then
               break
             fi
 
             if [ "$attempt" -eq 12 ]; then
               echo "Published pages did not become available"
               echo "--- response headers ---"
-              curl --silent --show-error --location --max-time 20 -D - "$SITE_URL?verify=$VERIFY_TOKEN" -o /tmp/final.html || true
+              curl --silent --show-error --location --max-time 20 -D - "$SITE_URL" -o /tmp/final.html || true
               echo "--- response body ---"
               sed -n "1,120p" /tmp/final.html || true
               exit 1
