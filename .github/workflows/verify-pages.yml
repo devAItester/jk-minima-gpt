@@ -1,0 +1,24 @@
+name: Verify published site
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify Pages
+        run: |
+          set -eux
+          base="https://devaitester.github.io/jk-minima-gpt"
+          for path in "/" "/posts/" "/about/"; do
+            curl --fail --silent --show-error --location "$base$path" -o /dev/null
+          done
+          curl --fail --silent --show-error --location "$base/" -o index.html
+          grep -q 'Блог' index.html
+          grep -q 'О сайте' index.html
+          if grep -q 'Все записи' index.html; then
+            echo "archive must not be in primary header" >&2
+            exit 1
+          fi
