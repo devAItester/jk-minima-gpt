@@ -16,13 +16,21 @@ layout: default
   </div>
 
   <nav class="post-navigation" aria-label="Навигация по записям">
-    <a href="{{ "/posts/" | relative_url }}">← Все записи</a>
-    {%- if page.previous -%}
-      <a href="{{ page.previous.url | relative_url }}">Предыдущая</a>
-    {%- endif -%}
-    {%- if page.next -%}
-      <a href="{{ page.next.url | relative_url }}">Следующая</a>
-    {%- endif -%}
+    <a class="post-navigation__archive" href="{{ "/posts/" | relative_url }}">← Все записи</a>
+    <div class="post-navigation__adjacent">
+      {%- if page.previous -%}
+        <a href="{{ page.previous.url | relative_url }}">
+          <span>Предыдущая</span>
+          <strong>{{ page.previous.title | escape }}</strong>
+        </a>
+      {%- endif -%}
+      {%- if page.next -%}
+        <a href="{{ page.next.url | relative_url }}">
+          <span>Следующая</span>
+          <strong>{{ page.next.title | escape }}</strong>
+        </a>
+      {%- endif -%}
+    </div>
   </nav>
 
   <a class="u-url" href="{{ page.url | relative_url }}" hidden></a>
