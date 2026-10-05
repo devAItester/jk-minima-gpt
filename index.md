@@ -1,8 +1,8 @@
 ---
 layout: home
-title: Home
+title: Блог
 ---
 
 # jk-minima-gpt
 
-Jekyll site using the **Minima** theme.
+Посты публикуются из папки \`posts/\`.
