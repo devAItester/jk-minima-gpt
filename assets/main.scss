@@ -4,7 +4,7 @@
 @import "minima";
 
 .wrapper {
-  max-width: 900px;
+  max-width: 760px;
 }
 
 .site-header {
@@ -19,6 +19,10 @@
   gap: 2rem;
 }
 
+.site-title {
+  font-weight: 600;
+}
+
 .site-nav {
   display: flex;
   align-items: center;
@@ -31,6 +35,9 @@
 
 .site-nav .page-link.is-active {
   font-weight: 700;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
 }
 
 .breadcrumbs {
@@ -53,11 +60,26 @@
   color: $grey-color;
 }
 
+.home-header {
+  margin-bottom: 3rem;
+}
+
+.home-header .page-heading {
+  margin-bottom: 0.75rem;
+}
+
+.home-description {
+  margin-bottom: 0;
+  color: $grey-color;
+  font-size: 1.05rem;
+}
+
 .section-heading {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .section-heading h2 {
@@ -65,7 +87,7 @@
 }
 
 .post-list > li {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.75rem;
 }
 
 .post-list h2,
@@ -73,18 +95,49 @@
   margin-bottom: 0;
 }
 
-.post-list .post-meta {
-  margin-bottom: 0.25rem;
+.post-list .post-meta,
+.post-meta {
+  margin-bottom: 0.35rem;
+  color: $grey-color;
+  font-size: 0.9rem;
+}
+
+.post-link {
+  line-height: 1.35;
 }
 
 .post-navigation {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 1rem;
+  display: grid;
+  gap: 1.5rem;
   margin-top: 3rem;
-  padding-top: 1.25rem;
+  padding-top: 1.5rem;
   border-top: 1px solid $grey-color-light;
+}
+
+.post-navigation__adjacent {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2rem;
+}
+
+.post-navigation__adjacent a {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.post-navigation__adjacent a span {
+  color: $grey-color;
+  font-size: 0.85rem;
+}
+
+.post-navigation__adjacent a strong {
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.post-navigation__adjacent a:last-child {
+  text-align: right;
 }
 
 @media screen and (max-width: $on-palm) {
@@ -95,5 +148,13 @@
   .site-nav {
     margin-top: 0.75rem;
     flex-wrap: wrap;
+  }
+
+  .post-navigation__adjacent {
+    grid-template-columns: 1fr;
+  }
+
+  .post-navigation__adjacent a:last-child {
+    text-align: left;
   }
 }
