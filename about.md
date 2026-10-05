@@ -1,7 +1,9 @@
 ---
 layout: page
-title: About
+title: О сайте
 permalink: /about/
 ---
 
-This site is a minimal Jekyll + Minima test.
+Это минимальный блог на Jekyll и Minima.
+
+Исходные записи хранятся в папке `posts/` как обычные Markdown-файлы без front matter. Перед сборкой GitHub Pages скрипт подготавливает из них записи Jekyll.
