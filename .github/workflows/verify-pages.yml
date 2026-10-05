@@ -16,9 +16,13 @@ jobs:
         run: |
           set -euo pipefail
           SITE="https://devaitester.github.io/jk-minima-gpt"
-          curl --fail --silent --show-error --location --retry 10 --retry-delay 3 "$SITE/" -o /tmp/index.html
-          curl --fail --silent --show-error --location --retry 10 --retry-delay 3 "$SITE/posts/" -o /tmp/posts.html
-          curl --fail --silent --show-error --location --retry 10 --retry-delay 3 "$SITE/about/" -o /tmp/about.html
+          for path in "/" "/posts/" "/about/"; do
+            code=$(curl --silent --show-error --location --retry 5 --retry-delay 2 -o /tmp/page.html -w "%{http_code}" "$SITE$path")
+            echo "$path -> HTTP $code"
+          done
+          curl --fail --silent --show-error --location --retry 5 --retry-delay 2 "$SITE/" -o /tmp/index.html
+          curl --fail --silent --show-error --location --retry 5 --retry-delay 2 "$SITE/posts/" -o /tmp/posts.html
+          curl --fail --silent --show-error --location --retry 5 --retry-delay 2 "$SITE/about/" -o /tmp/about.html
           python3 - <<'PY'
           from html.parser import HTMLParser
           from urllib.parse import urljoin
