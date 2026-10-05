@@ -58,29 +58,35 @@ jobs:
           set -euo pipefail
 
           for attempt in $(seq 1 12); do
-            echo "Checking published index, attempt $attempt/12"
+            echo "Checking published pages, attempt $attempt/12"
+
             if curl --fail --silent --show-error --location \
               --retry 3 --retry-delay 2 --retry-all-errors \
-              "$SITE_URL?verify=$VERIFY_TOKEN" -o /tmp/index.html; then
-              count=$(grep -o 'href="[^"]*/posts/[^"]*"' /tmp/index.html | wc -l || true)
-              echo "Found $count post links"
-              if [ "$count" -eq 10 ]; then
-                break
-              fi
+              "$SITE_URL?verify=$VERIFY_TOKEN" -o /tmp/index.html &&
+              curl --fail --silent --show-error --location \
+              --retry 3 --retry-delay 2 --retry-all-errors \
+              "$SITE_URL/posts/?verify=$VERIFY_TOKEN" -o /tmp/posts.html &&
+              curl --fail --silent --show-error --location \
+              --retry 3 --retry-delay 2 --retry-all-errors \
+              "$SITE_URL/about/?verify=$VERIFY_TOKEN" -o /tmp/about.html; then
+              break
             fi
+
             if [ "$attempt" -eq 12 ]; then
-              echo "Published index did not expose all 10 post links"
+              echo "Published pages did not become available"
               exit 1
             fi
+
             sleep 5
           done
 
           python3 - <<'PY'
           from html.parser import HTMLParser
+          import os
           import subprocess
           from urllib.parse import urljoin
 
-          site_url = "${{ steps.deployment.outputs.page_url }}"
+          site_url = os.environ["SITE_URL"]
 
           class Links(HTMLParser):
               def __init__(self):
@@ -92,21 +98,27 @@ jobs:
                       if key == "href" and value:
                           self.hrefs.append(value)
 
-          parser = Links()
-          parser.feed(open("/tmp/index.html", encoding="utf-8").read())
+          def links(path):
+              parser = Links()
+              parser.feed(open(path, encoding="utf-8").read())
+              return {urljoin(site_url, href) for href in parser.hrefs}
 
-          urls = {urljoin(site_url, href) for href in parser.hrefs}
-          urls.add(site_url)
-          urls.add(urljoin(site_url, "about/"))
+          post_index_urls = links("/tmp/posts.html")
+          post_urls = sorted(url for url in post_index_urls if "/posts/" in url)
 
-          post_urls = sorted(url for url in urls if "/posts/" in url)
-          urls = [site_url, urljoin(site_url, "about/")] + post_urls
+          if len(post_urls) != 10:
+              raise SystemExit(
+                  f"Expected 10 published post links on /posts/, found {len(post_urls)}"
+              )
 
-          seen = set()
-          for url in urls:
-              if url in seen:
-                  continue
-              seen.add(url)
+          required = set([
+              site_url,
+              urljoin(site_url, "posts/"),
+              urljoin(site_url, "about/"),
+              *post_urls,
+          ])
+
+          for url in sorted(required):
               print(f"GET {url}")
               subprocess.run([
                   "curl", "--fail", "--silent", "--show-error", "--location",
@@ -114,10 +126,5 @@ jobs:
                   url, "-o", "/dev/null"
               ], check=True)
 
-          if len(post_urls) != 10:
-              raise SystemExit(
-                  f"Expected 10 published post links, found {len(post_urls)}"
-              )
-
-          print(f"Verified {len(seen)} published pages.")
+          print(f"Verified {len(required)} published pages.")
           PY
