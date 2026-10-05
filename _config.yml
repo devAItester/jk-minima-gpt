@@ -1,10 +1,19 @@
-title: jk-minima-gpt
-description: Jekyll blog with the Minima theme
+title: FA EB FE
+description: Заметки о создании и публикации сайта
 theme: minima
 baseurl: "/jk-minima-gpt"
 url: "https://devAItester.github.io"
+lang: ru
 markdown: kramdown
 permalink: pretty
+
+minima:
+  date_format: "%Y-%m-%d"
+
+header_pages:
+  - index.md
+  - posts.md
+  - about.md
 
 exclude:
   - posts

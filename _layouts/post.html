@@ -1,0 +1,29 @@
+---
+layout: default
+---
+<article class="post h-entry" itemscope itemtype="https://schema.org/BlogPosting">
+  <header class="post-header">
+    <p class="post-meta">
+      <time class="dt-published" datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">
+        {{ page.date | date: site.minima.date_format }}
+      </time>
+    </p>
+    <h1 class="post-title p-name" itemprop="name headline">{{ page.title | escape }}</h1>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    {{ content }}
+  </div>
+
+  <nav class="post-navigation" aria-label="Навигация по записям">
+    <a href="{{ "/posts/" | relative_url }}">← Все записи</a>
+    {%- if page.previous -%}
+      <a href="{{ page.previous.url | relative_url }}">Предыдущая</a>
+    {%- endif -%}
+    {%- if page.next -%}
+      <a href="{{ page.next.url | relative_url }}">Следующая</a>
+    {%- endif -%}
+  </nav>
+
+  <a class="u-url" href="{{ page.url | relative_url }}" hidden></a>
+</article>
