@@ -74,6 +74,10 @@ jobs:
 
             if [ "$attempt" -eq 12 ]; then
               echo "Published pages did not become available"
+              echo "--- response headers ---"
+              curl --silent --show-error --location --max-time 20 -D - "$SITE_URL?verify=$VERIFY_TOKEN" -o /tmp/final.html || true
+              echo "--- response body ---"
+              sed -n "1,120p" /tmp/final.html || true
               exit 1
             fi
 
