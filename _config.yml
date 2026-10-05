@@ -12,7 +12,7 @@ minima:
 
 header_pages:
   - index.md
-  - posts.md
+  - all-posts.md
   - about.md
 
 exclude:
