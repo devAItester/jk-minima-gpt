@@ -2,8 +2,6 @@ name: Verify published Pages
 
 on:
   push:
-    paths-ignore:
-      - ".github/workflows/verify-pages.yml"
 
 permissions:
   contents: read
