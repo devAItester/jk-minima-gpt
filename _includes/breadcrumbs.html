@@ -1,0 +1,11 @@
+{%- unless page.url == "/" -%}
+<nav class="breadcrumbs" aria-label="Хлебные крошки">
+  <ol>
+    <li><a href="{{ "/" | relative_url }}">Блог</a></li>
+    {%- if page.layout == "post" -%}
+      <li><a href="{{ "/posts/" | relative_url }}">Все записи</a></li>
+    {%- endif -%}
+    <li aria-current="page">{{ page.title | escape }}</li>
+  </ol>
+</nav>
+{%- endunless -%}
