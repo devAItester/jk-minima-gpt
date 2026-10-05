@@ -4,7 +4,6 @@
 
     <nav class="site-nav" aria-label="Основная навигация">
       <a class="page-link{% if page.url == "/" %} is-active{% endif %}" href="{{ "/" | relative_url }}">Блог</a>
-      <a class="page-link{% if page.url contains "/posts/" %} is-active{% endif %}" href="{{ "/posts/" | relative_url }}">Все записи</a>
       <a class="page-link{% if page.url == "/about/" %} is-active{% endif %}" href="{{ "/about/" | relative_url }}">О сайте</a>
     </nav>
   </div>
